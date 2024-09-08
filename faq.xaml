@@ -1,0 +1,111 @@
+﻿<Window x:Class="FreeNet.faq"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FreeNet"
+        mc:Ignorable="d"
+        Title="FAQ" Height="450" Width="800" ResizeMode="CanMinimize" Icon="/www.png">
+    <Grid>
+        <RichTextBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" VerticalScrollBarVisibility="Auto" IsReadOnly="True" IsDocumentEnabled="True">
+            <FlowDocument>
+                <Paragraph TextAlignment="Center" FontSize="24">
+                    <Run Text="FAQ"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Как запустить обход?"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="1. Запустить все средства"/>
+                    <LineBreak/>
+                    <Run Text="2. Нажать на кнопку &quot;Настроить http/s прокси&quot;. Если был изменен порт HTTP/S прокси, то указать другой" />
+                    <LineBreak/>
+                    <Run Text="3. Нажать на кнопку &quot;Проверить обход&quot;" />
+                    <LineBreak/>
+                    <Run Text="4. В консоли должно отобразиться, что обход работает"/>
+                    <LineBreak/>
+                    <LineBreak/>
+                    <Run Text="Теперь Вы можете свободно пользоваться интернетом. Если вам нужно подключить другие устройства, то читайте ниже."/>
+                </Paragraph>
+                <Paragraph>
+                    <Bold>Если у Вас нет Wi-Fi, смотрите конец страницы</Bold>
+                    <LineBreak/>
+                    <Bold>Если у Вас проблемы с запуском HTTP Proxy, то отключите антивирус или добавьте процесс/файл 3proxy.exe в исключение</Bold>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Подключение устройств на Windows (в одной локальной сети)"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="1. Нажмите кнопку Пуск , затем выберите Параметры  > Сеть и Интернет  > Proxy."/>
+                    <LineBreak/>
+                    <Run Text="2. В разделе &quot;Настройка прокси-сервера вручную&quot; рядом с пунктом &quot;Использовать прокси-сервер&quot; выберите &quot;Настроить&quot;." />
+                    <LineBreak/>
+                    <Run Text="3. В диалоговом окне &quot;Изменение прокси-сервера&quot; сделайте следующее:" />
+                    <LineBreak/>
+
+                    <Run Text="         Включите Использование прокси-сервера." />
+                    <LineBreak/>
+                    <Run Text="         В полях IP-адрес прокси-сервера и Порт введите IP-адрес и порт (default: 8080) соответственно." />
+                    <LineBreak/>
+                    <Run Text="         Установите флажок Не использовать прокси-сервер для локальных адресов (интрасети)."/>
+                    <LineBreak/>
+                    <Run Text="         Нажмите Сохранить."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Подключение устройств на Android через WiFi (в одной локальной сети)"/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="1. Откройте настройки устройства."/>
+                    <LineBreak/>
+                    <Run Text="2. Зайдите в настройки Wi-Fi"/>
+                    <LineBreak/>
+                    <Run Text="3. Откройте настройки сети к которой Вы подключены"/>
+                    <LineBreak/>
+                    <Run Text="4. В разделе &quot;Прокси-сервер&quot; выберите &quot;вручную&quot;"/>
+                    <LineBreak/>
+                    <Run Text="5. Введите настройки прокси-сервера ваш IP и порт (default: 8080)."/>
+                </Paragraph>
+                <Paragraph>
+                    <Run Text="Подключение устройств на iOS (в одной локальной сети)"/>
+                </Paragraph>
+                <Paragraph>
+                    1. Установите приложение
+                    <Hyperlink NavigateUri="https://apps.apple.com/ru/app/potatso/id1239860606" RequestNavigate="RequestNavigate">Potatso</Hyperlink> (оно бесплатное)
+                    <LineBreak/>
+                    <Run Text="2. Откройте его" />
+                    <LineBreak/>
+                    <Run Text="3. Нажмите внизу на кнопку &quot;Add a Proxy&quot; (Добавить прокси)"/>
+                    <LineBreak/>
+                    <Run Text="4. В &quot;Manual Input&quot; (Ручной ввод) нажмите &quot;Add&quot; (Добавить)"/>
+                    <LineBreak/>
+                    <Run Text="5. В &quot;Type&quot; (Тип) выберите Socks5"/>
+                    <LineBreak/>
+                    <Run Text="6. В поля &quot;Host&quot; (Хост) введите ваш IP-адрес и &quot;Port&quot; (Порт) default: 8081"/>
+                    <LineBreak/>
+                    <Run Text="7. Нажмите &quot;Done&quot; (Добавить)"/>
+                    <LineBreak/>
+                    <Run Text="8. Нажмите на кнопку запуска подключения справа снизу"/>
+                </Paragraph>
+                <Paragraph>
+                    Что делать если нету Wi-Fi сети?
+                </Paragraph>
+                <Paragraph>
+                    Если Ваше устройство оборудовано Wi-Fi модулем, то используйте HOT SPOT вместо него.
+                    <LineBreak/>
+                    <Hyperlink RequestNavigate="RequestNavigate" NavigateUri="ms-settings:network-mobilehotspot">Нажмите сюда</Hyperlink>
+                    
+                </Paragraph>
+                <Paragraph>
+                    Используемое ПО:
+                    <LineBreak/>
+                    <Hyperlink NavigateUri="https://github.com/ValdikSS/GoodbyeDPI" RequestNavigate="RequestNavigate">GoodbyeDPI</Hyperlink>
+                    <LineBreak/>
+                    <Hyperlink NavigateUri="https://github.com/3proxy/3proxy" RequestNavigate="RequestNavigate">3proxy</Hyperlink>
+                    <LineBreak/>
+                    <Hyperlink NavigateUri="https://github.com/AdguardTeam/dnsproxy" RequestNavigate="RequestNavigate">dnsproxy</Hyperlink>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
+
+    </Grid>
+</Window>
