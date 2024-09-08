@@ -51,6 +51,7 @@
 ![Image](https://github.com/i9a4/FREENET/blob/main/media/img2.png?raw=true)
 
 Порты подключения по умолчанию:
+
 8080 - HTTP PROXY
 
 8081 - SOCKS 5
