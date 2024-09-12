@@ -57,12 +57,14 @@ namespace FreeNet
             foreach (Process proc in dpi)
             {
                 proc.Kill();
+                proc.WaitForExit();
             }
             Process[] doh = Process.GetProcessesByName("dnsproxy");
 
             foreach (Process proc in doh)
             {
                 proc.Kill();
+                proc.WaitForExit();
             }
 
             Process[] proxy = Process.GetProcessesByName("3proxy");
@@ -70,6 +72,7 @@ namespace FreeNet
             foreach (Process proc in proxy)
             {
                 proc.Kill();
+                proc.WaitForExit();
             }
 
 
@@ -126,7 +129,7 @@ namespace FreeNet
 
             offProxy();
 
-            Process.GetCurrentProcess().Close();
+            Process.GetCurrentProcess().Kill();
             Application.Current.Shutdown();
         }
 

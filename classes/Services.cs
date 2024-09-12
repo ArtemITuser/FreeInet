@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shell;
 using System.Windows.Threading;
 
 namespace FreeNet.classes
@@ -266,9 +267,15 @@ namespace FreeNet.classes
                 return true;
             }
             _Status = 3;
+
             try
             {
-                Process.GetProcessById(_PID).Kill();
+                Process _p = Process.GetProcessById(_PID);
+                if (_p != null)
+                {
+                    _p.Kill();
+                    _p.WaitForExit();
+                }
             }
             catch (Exception e)
             {
