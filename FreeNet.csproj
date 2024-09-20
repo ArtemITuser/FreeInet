@@ -51,6 +51,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>true</Prefer32Bit>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>D714FEDE16BA08D514CB140C0960C2AB9721599A</ManifestCertificateThumbprint>
@@ -160,6 +161,9 @@
     <Compile Include="Settings.xaml.cs">
       <DependentUpon>Settings.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LogBox.xaml.cs">
+      <DependentUpon>LogBox.xaml</DependentUpon>
+    </Compile>
     <Page Include="Dictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -187,6 +191,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Settings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LogBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -239,12 +247,13 @@
     <None Include="programs\GoodbyeDPI\x86\WinDivert64.sys">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="programs\GoodbyeDPI\x86_64\WinDivert64.sys">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="programs\GoodbyeDPI\x86_64\WinDivert64.sys" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="service_remove.cmd">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -310,18 +319,8 @@
     <None Include="programs\DoH\windows-386\dnsproxy.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="programs\GoodbyeDPI\x86\goodbyedpi.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="programs\GoodbyeDPI\x86\WinDivert.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="programs\GoodbyeDPI\x86_64\goodbyedpi.exe">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="programs\GoodbyeDPI\x86_64\WinDivert.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="programs\GoodbyeDPI\x86_64\goodbyedpi.exe" />
+    <None Include="programs\GoodbyeDPI\x86_64\WinDivert.dll" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="www.ico" />
@@ -334,6 +333,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Icon1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="programs\GoodbyeDPI\x86\goodbyedpi.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="programs\GoodbyeDPI\x86\WinDivert.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

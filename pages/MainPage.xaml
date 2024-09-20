@@ -9,16 +9,23 @@
       Title="FREENET" Background="White">
 
     <Grid>
-        <Border BorderThickness="1" BorderBrush="{x:Null}" Margin="10,10,96,0" Height="72" VerticalAlignment="Top" CornerRadius="10" Background="White">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="15" Color="Black" Opacity="0.3" ShadowDepth="0"/>
-            </Border.Effect>
-            <Label Content="by Maxim D." HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,0" Foreground="#66000000"/>
-        </Border>
+        <Grid VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="0.15*"/>
+            </Grid.ColumnDefinitions>
+            <Border BorderThickness="1" BorderBrush="{x:Null}" Margin="10,10,10,0" Height="72" VerticalAlignment="Top" CornerRadius="10" Background="White">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" Color="Black" Opacity="0.3" ShadowDepth="0"/>
+                </Border.Effect>
+                <Label Content="by Maxim D." HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,0" Foreground="#66000000"/>
+            </Border>
+            <Button Style="{DynamicResource Button}" Grid.Column="1" Content="Выход" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10" Click="Button_Click_10"/>
+        </Grid>
 
 
 
-        <Label Content="FREENET&#xA;СПТЗ РКН (СРЕДСТВО ПРОТИВОДЕЙСТВИЯ ТЕХНИЧЕСКИМ ЗАПРЕТАМ РКН)" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" FontSize="18" Padding="10,5,5,5"/>
+        <Label Content="FREENET v1.1&#xA;СПТЗ РКН (СРЕДСТВО ПРОТИВОДЕЙСТВИЯ ТЕХНИЧЕСКИМ ЗАПРЕТАМ РКН)" HorizontalAlignment="Left" Margin="10,17,0,0" VerticalAlignment="Top" FontSize="18" Padding="10,5,5,5"/>
         <Grid Margin="10,108,10,10" UseLayoutRounding="False" >
 
             <Grid.ColumnDefinitions>
@@ -50,7 +57,7 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <Label Content="Основное средство обхода ТСПУ" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                    <Label Content="Основное средство обхода ТСПУ (GoodbyeDPI)" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center"/>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -301,7 +308,17 @@
                     <Button Style="{DynamicResource Button}" Grid.Column="1" Content="FAQ (Помощь)" HorizontalAlignment="Center" VerticalAlignment="Center" Width="121" Click="Button_Click_9"/>
                 </Grid>
 
-                <Border CornerRadius="0, 0, 10, 10" Style="{DynamicResource BorderColor}" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="3"/>
+                <Border CornerRadius="0, 0, 10, 10" Style="{DynamicResource BorderColor}" BorderThickness="1,0,1,1" Grid.Column="0" Grid.Row="3">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Style="{DynamicResource Button}" Content="Открыть логи" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click_11"/>
+                    </Grid>
+                </Border>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="0.2*"/>
@@ -311,18 +328,7 @@
                     <ListBox x:Name="IpList" Grid.Row="1" BorderThickness="0,1,0,0" Margin="1,0,1,1">
                     </ListBox>
                 </Grid>
-                <TextBox x:Name="LogBox" ScrollViewer.IsDeferredScrollingEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="TextBlock&#xD;&#xA;" Grid.Row="2" BorderBrush="{x:Null}" IsReadOnly="True" CaretBrush="Black" MaxLength="10">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="0,0,10,10"/>
-                                </Style>
-                            </Style.Resources>
 
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
             </Grid>
         </Grid>
     </Grid>

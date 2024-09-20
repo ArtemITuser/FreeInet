@@ -1,0 +1,50 @@
+﻿<Window x:Class="FreeNet.LogBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FreeNet"
+        mc:Ignorable="d"
+        Title="Logs" Height="450" Width="800" ResizeMode="CanResizeWithGrip" Icon="/www.png" MinWidth="450" MinHeight="450">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="72"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1"/>
+        
+        <Grid Grid.Row="1" MaxHeight="72" Height="72">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="400"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button Style="{DynamicResource Button}" Content="Очистить" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click_1"/>
+                    <Button Style="{DynamicResource Button}" Content="Закрыть" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Click="Button_Click"/>
+                </Grid>
+                <CheckBox Content="Приостановить" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked"/>
+            </Grid>
+        </Grid>
+        <TextBox x:Name="OutBox" ScrollViewer.IsDeferredScrollingEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="TextBlock&#xD;&#xA;" IsReadOnly="True" CaretBrush="Black" MaxLength="10">
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="0,0,10,10"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
+
+    </Grid>
+</Window>

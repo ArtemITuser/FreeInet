@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,10 +17,13 @@ namespace FreeNet.classes
 
         static public bool createDefaultConfig()
         {
+            // old -p -m -a -f 2 -k 2 -e 1 --max-payload 2500 --min-ttl 128 --auto-ttl 1-4-128 --reverse-frag --native-frag
+            // old 2 -p -e 1 --reverse-frag
+            
             string json = """
                 {
                   "GoodByeDPI": {
-                    "Arguments": "-p -m -a -f 2 -k 2 -e 1 --max-payload 2500 --min-ttl 128 --auto-ttl 1-4-128 --reverse-frag --native-frag"
+                    "Arguments": "-p -s -f 1 -e 1 -q --wrong-seq --native-frag --reverse-frag --fake-gen 30 --fake-resend 1 --fake-from-hex 18fc408e68 --fake-from-hex 7e60d032be"
                   },
                   "DOH": {
                     "Arguments": "-u https://1.1.1.1/dns-query  --hosts-files=\"%pwd_no_disk%/programs/DoH/windows-386/hosts\""
@@ -36,12 +40,15 @@ namespace FreeNet.classes
             return true;
         }
 
-        static public bool writeConfig(JObject JSON)
+        static public async Task<bool> writeConfigAsync(JObject JSON)
         {
             string json = JsonConvert.SerializeObject(JSON, Formatting.Indented);
             try
             {
-                File.WriteAllText("config.json", json);
+                using (StreamWriter outputFile = new StreamWriter("config.json"))
+                {
+                   await outputFile.WriteAsync(json);
+                }
             }
             catch (Exception e)
             {
@@ -61,7 +68,11 @@ namespace FreeNet.classes
             {
                 if (File.Exists("config.json"))
                 {
-                    text = File.ReadAllText("config.json");
+                    using (var myStream = File.Open(@"config.json", FileMode.OpenOrCreate, FileAccess.Read))
+                    {
+                        StreamReader myReader = new StreamReader(myStream);
+                        text = myReader.ReadToEnd();
+                    }
                 }
                 else
                 {
@@ -81,7 +92,7 @@ namespace FreeNet.classes
             return json;
         }
 
-        static public bool setCoifig(string name, string arg)
+       async static public Task<bool> setCoifig(string name, string arg)
         {
             JObject conf = getConfig();
 
@@ -92,7 +103,7 @@ namespace FreeNet.classes
 
             conf[name]["Arguments"] = arg;
 
-            writeConfig(conf);
+           await writeConfigAsync(conf);
 
             return true;
         }

@@ -1,12 +1,15 @@
 ﻿using FreeNet.pages;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,8 +25,11 @@ namespace FreeNet.classes
     // 0 - stopped; 1 - working; 2 - starting; 3 - stopping;
     public class Service
     {
-        private int _PID = 0;
-        private int _pStatus = 0;
+        [DllImport("kernel32.dll")] private static extern bool TerminateProcess(IntPtr hProcess, int uExitCode);
+        [DllImport("kernel32.dll")] private static extern System.UInt32 GetLastError();
+        private int _PID = -1;
+        private int _pStatus = -1;
+        private bool _pRestart = false;
         private int _Status
         {
             get
@@ -33,6 +39,7 @@ namespace FreeNet.classes
 
             set
             {
+                if (_pStatus == value) return;
                 _pStatus = value;
                 Notify?.Invoke((int)value);
             }
@@ -205,54 +212,60 @@ namespace FreeNet.classes
         public bool Start()
         {
             MainPage.Log.Write("Init Start ", _Name);
-            _Status = 2;
-            Process proc = new Process();
-            proc.StartInfo.FileName = _Directory;
-            proc.StartInfo.Arguments = parseArg(_Arguments);
-            proc.StartInfo.UseShellExecute = false;
-            proc.StartInfo.RedirectStandardOutput = true;
-            proc.StartInfo.RedirectStandardError = true;
 
-            proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            proc.StartInfo.CreateNoWindow = true;
-            proc.EnableRaisingEvents = true;
-
-            proc.Exited += (new EventHandler((object sender, EventArgs e) => { Stop(true, proc.ExitCode); }));
-
-            proc.StartInfo.StandardOutputEncoding = Encoding.GetEncoding("CP866");
-            proc.StartInfo.StandardErrorEncoding = Encoding.GetEncoding("CP866");
-
-
-
-            proc.OutputDataReceived += (s, e) => { MainPage.Log.Write(e.Data, _Name); };
-            proc.ErrorDataReceived += (s, e) => { MainPage.Log.Write(e.Data, _Name); };
-
-
-            try
+            Task.Run(() =>
             {
-                proc.Start();
-                proc.BeginOutputReadLine();
-                proc.BeginErrorReadLine();
-            }
-            catch (Exception e)
-            {
-                _Status = 0;
-                MainPage.Log.Write(e.Message, _Name);
-                return false;
-            }
+                _Status = 2;
+                Process proc = new Process();
+                proc.StartInfo.FileName = _Directory;
+                proc.StartInfo.Arguments = parseArg(_Arguments);
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.StartInfo.RedirectStandardError = true;
+
+                proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.EnableRaisingEvents = true;
+
+                proc.Exited += (new EventHandler((object sender, EventArgs e) => { Stop(true, proc.ExitCode); }));
+
+                proc.StartInfo.StandardOutputEncoding = Encoding.GetEncoding("CP866");
+                proc.StartInfo.StandardErrorEncoding = Encoding.GetEncoding("CP866");
+
+
+
+                proc.OutputDataReceived += (s, e) => { MainPage.Log.Write(e.Data, _Name); };
+                proc.ErrorDataReceived += (s, e) => { MainPage.Log.Write(e.Data, _Name); };
+
+
+                try
+                {
+                    proc.Start();
+                    proc.BeginOutputReadLine();
+                    proc.BeginErrorReadLine();
+                }
+                catch (Exception e)
+                {
+                    _Status = 0;
+                    MainPage.Log.Write(e.Message, _Name);
+                }
 
 
 
 
-            _PID = proc.Id;
-            int pid_main = Process.GetCurrentProcess().Id;
+                _PID = proc.Id;
+                int pid_main = Process.GetCurrentProcess().Id;
 
-            _Status = 1;
-            MainPage.Log.Write("Started with PID:" + _PID, _Name);
-            if (_ports != null)
-            {
-                Task.Run(() => PortsMonitoring());
-            }
+                if (_pRestart) _pRestart = false;
+                _Status = 1;
+                MainPage.Log.Write("Started with PID:" + _PID, _Name);
+                if (_ports != null)
+                {
+                    Task.Run(() => PortsMonitoring());
+                }
+            });
+
+
 
 
             return true;
@@ -260,48 +273,76 @@ namespace FreeNet.classes
 
         public bool Stop(bool proc = false, int exitCode = 0)
         {
-            if (proc)
+            Task.Run(() =>
             {
-                _Status = 0;
-                MainPage.Log.Write("Stopped\tCode: " + exitCode, _Name);
-                return true;
-            }
-            _Status = 3;
-
-            try
-            {
-                Process _p = Process.GetProcessById(_PID);
-                if (_p != null)
+                if (proc)
                 {
-                    _p.Kill();
-                    _p.WaitForExit();
+                    _Status = 0;
+                    MainPage.Log.Write("Stopped\tCode: " + exitCode, _Name);
+                    return;
                 }
-            }
-            catch (Exception e)
-            {
-                _Status = 0;
-                MainPage.Log.Write(e.Message);
-            }
-
+                _Status = 3;
+                KillProcess(_PID);
+            });
 
             return true;
         }
-        async public Task<bool> Restart()
+
+        private static void KillProcess(int pid)
         {
+            //ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
+            //  ("Select * From Win32_Process Where ParentProcessID=" + pid);
+            //ManagementObjectCollection processCollection = processSearcher.Get();
 
+            //// We must kill child processes first!
+            //if (processCollection != null)
+            //{
+            //    foreach (ManagementObject mo in processCollection)
+            //    {
+            //        KillProcessAndChildrens(Convert.ToInt32(mo["ProcessID"])); //kill child processes(also kills childrens of childrens etc.)
+            //    }
+            //}
 
-            await Task.Run(() =>
+            try
+            {
+                Process proc = Process.GetProcessById(pid);
+                if (!proc.HasExited)
+                {
+                    if (!TerminateProcess(proc.Handle, 0))
+                    {
+                        var err = GetLastError();
+                        throw new Exception("Error code: " + err);
+                    };
+                }
+
+            }
+            catch (ArgumentException)
             {
 
-                while (Stop())
+            }
+        }
+
+        public bool Restart()
+        {
+            _pRestart = true;
+            changeStatus(-1);
+
+            Task.Run(() =>
+            {
+                Stop();
+
+                while (true)
                 {
                     if (_Status == 0)
                     {
                         Start();
                         break;
                     }
+
+                    Thread.Sleep(500);
                 }
             });
+
 
             return true;
         }
@@ -316,7 +357,11 @@ namespace FreeNet.classes
             _pid.Dispatcher.BeginInvoke(() => { _pid.Clear(); });
             if (_ports != null) _ports.Dispatcher.BeginInvoke(() => { _ports.Clear(); });
 
-            if (status == 0)
+            if (_pRestart)
+            {
+                _status.Dispatcher.BeginInvoke(() => { _status.Content = "Перезапуск"; });
+            }
+            else if (status == 0)
             {
                 _status.Dispatcher.BeginInvoke(() => { _status.Content = "Остановлен"; _status.Foreground = Brushes.Red; });
 

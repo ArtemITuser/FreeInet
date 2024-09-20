@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -49,6 +50,7 @@ namespace FreeNet.pages
 
         private bool faq_show = false;
         private bool app_work = true;
+        private bool log_show = false;
 
 
         public MainPage()
@@ -81,18 +83,19 @@ namespace FreeNet.pages
             buttons_proxy.Add(btn_proxy_Stop);
             buttons_proxy.Add(btn_proxy_Restart);
 
-            _services = new List<Service>();
-
-            _services.Add(new Service("GoodByeDPI", "./programs/GoodbyeDPI/x86_64/goodbyedpi.exe", buttons_dpi, dpi_status, dpi_arg, dpi_pid));
-            _services.Add(new Service("DOH", "./programs/DoH/windows-386/dnsproxy.exe", buttons_doh, doh_status, doh_arg, doh_pid, doh_ports));
-            _services.Add(new Service("Proxy", "./programs/3proxy-0.9.3/bin/3proxy.exe", buttons_proxy, proxy_status, proxy_arg, proxy_pid, proxy_ports));
+            _services =
+            [
+                new Service("GoodByeDPI", "./programs/GoodbyeDPI/x86/goodbyedpi.exe", buttons_dpi, dpi_status, dpi_arg, dpi_pid),
+                new Service("DOH", "./programs/DoH/windows-386/dnsproxy.exe", buttons_doh, doh_status, doh_arg, doh_pid, doh_ports),
+                new Service("Proxy", "./programs/3proxy-0.9.3/bin/3proxy.exe", buttons_proxy, proxy_status, proxy_arg, proxy_pid, proxy_ports),
+            ];
             Services = _services;
 
         }
 
         public void setLogger()
         {
-            Log = new Logger(LogBox);
+            Log = new Logger();
         }
 
         private void getIps()
@@ -170,34 +173,34 @@ namespace FreeNet.pages
             service.Restart();
         }
 
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        async private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             Settings form = new Settings(Config.getParam("GoodByeDPI"));
             form.ShowDialog();
             if (form.save)
             {
-                Config.setCoifig("GoodByeDPI", form.arg);
+                await Config.setCoifig("GoodByeDPI", form.arg);
             }
 
         }
 
-        private void Button_Click_3(object sender, RoutedEventArgs e)
+        async private void Button_Click_3(object sender, RoutedEventArgs e)
         {
             Settings form = new Settings(Config.getParam("DOH"));
             form.ShowDialog();
             if (form.save)
             {
-                Config.setCoifig("DOH", form.arg);
+                await Config.setCoifig("DOH", form.arg);
             }
         }
 
-        private void Button_Click_4(object sender, RoutedEventArgs e)
+       async private void Button_Click_4(object sender, RoutedEventArgs e)
         {
             Settings form = new Settings(Config.getParam("Proxy"));
             form.ShowDialog();
             if (form.save)
             {
-                Config.setCoifig("Proxy", form.arg);
+                await Config.setCoifig("Proxy", form.arg);
             }
         }
 
@@ -246,11 +249,13 @@ namespace FreeNet.pages
         private void Button_Click_5(object sender, RoutedEventArgs e)
         {
             Config.createDefaultConfig();
-            MessageBox.Show("Конф. файл сброшен");
+            MessageBox.Show("Конфигурация сброшена", "Уведомление", MessageBoxButton.OK);
         }
 
         private async void Button_Click_6(object sender, RoutedEventArgs e)
         {
+            Button btn = sender as Button;
+            btn.IsEnabled = false;
             string url = "https://x.com";
             MainPage.Log.Write("Отправка запроса к " + url);
             HttpClientHandler handler = new HttpClientHandler();
@@ -267,18 +272,23 @@ namespace FreeNet.pages
                 MainPage.Log.Write("Ответ: " + res.StatusCode.ToString());
                 if (res.StatusCode == HttpStatusCode.OK)
                 {
+                    MessageBox.Show("Сайт доступен!", "Уведомление", MessageBoxButton.OK);
                     MainPage.Log.Write("Обход работает!");
                 }
                 else
                 {
+                    MessageBox.Show("Сайт недоступен!", "Уведомление", MessageBoxButton.OK);
                     MainPage.Log.Write("Обход не работает. Проверьте правильность установленных параметров.");
                 }
             }
-            catch
+            catch (Exception err)
             {
+                MessageBox.Show("Сайт недоступен!", "Уведомление", MessageBoxButton.OK);
                 MainPage.Log.Write("Обход не работает. Проверьте правильность установленных параметров.");
+                MainPage.Log.Write(err.Message);
             }
 
+            btn.IsEnabled = true;
 
 
         }
@@ -287,6 +297,7 @@ namespace FreeNet.pages
         {
             if (MainWindow.onProxy("http://localhost:" + port_proxy_conn.Text))
             {
+                MessageBox.Show("Прокси установлен", "Уведомление", MessageBoxButton.OK);
                 Log.Write("Прокси в системе настроено");
             }
 
@@ -303,6 +314,7 @@ namespace FreeNet.pages
         {
             if (MainWindow.offProxy())
             {
+                MessageBox.Show("Прокси сброшен", "Уведомление", MessageBoxButton.OK);
                 Log.Write("Настройки прокси в системе сброшены");
             }
         }
@@ -311,11 +323,33 @@ namespace FreeNet.pages
         {
             if (!faq_show)
             {
+                Button btn = sender as Button;
+                btn.IsEnabled = false;
                 faq faq = new faq();
-                faq.Closed += new EventHandler((object sender, EventArgs e) => { faq_show = false; });
+                faq.Closed += new EventHandler((object sender, EventArgs e) => { faq_show = false; btn.IsEnabled = true; });
                 faq.Show();
                 faq_show = true;
             }
+        }
+
+        private void Button_Click_10(object sender, RoutedEventArgs e)
+        {
+            MainWindow.CloseApp();
+        }
+
+        private void Button_Click_11(object sender, RoutedEventArgs e)
+        {
+            if (!log_show)
+            {
+                Button btn = sender as Button;
+                btn.IsEnabled = false;
+                LogBox win = new LogBox();
+                win.Closed += new EventHandler((object sender, EventArgs a) => { log_show = false; btn.IsEnabled = true; });
+                win.Show();
+                win.Focus();
+                log_show = true;
+            }
+
         }
     }
 }

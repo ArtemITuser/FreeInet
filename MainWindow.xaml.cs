@@ -52,6 +52,14 @@ namespace FreeNet
 
         private void CheckProc()
         {
+            if (Process.GetProcessesByName("FreeNet").Length > 1)
+            {
+                MessageBox.Show("FreeNet уже запущен!", "Уведомление", MessageBoxButton.OK);
+                hide_tooltips = true;
+                Application.Current.Shutdown();
+                return;
+            }
+
             Process[] dpi = Process.GetProcessesByName("goodbyedpi");
 
             foreach (Process proc in dpi)
@@ -81,6 +89,12 @@ namespace FreeNet
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
+            WindowToTray();
+            e.Cancel = true;
+        }
+
+        public void WindowToTray()
+        {
             notifyIcon = new System.Windows.Forms.NotifyIcon();
             notifyIcon.Icon = Properties.Resources.icon;
             notifyIcon.Visible = true;
@@ -88,7 +102,7 @@ namespace FreeNet
             {
                 new System.Windows.Forms.MenuItem("Открыть FREENET", (sender, e)=>{this.Show();notifyIcon.Visible = false; }),
                 new System.Windows.Forms.MenuItem("Выйти", (sender, e)=>{
-                MessageBoxResult box = MessageBox.Show("Вы уверены, что хотите выйти? Если Вы закроете программу, то обход работать не будет.", "Выход", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
+                MessageBoxResult box = MessageBox.Show("Вы уверены, что хотите выйти?", "Выход", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.None, MessageBoxOptions.DefaultDesktopOnly);
                 if (box == MessageBoxResult.No)
                 {
 
@@ -102,21 +116,20 @@ namespace FreeNet
                 });
 
             notifyIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-            notifyIcon.BalloonTipText = "Приложение работает в фоновом режиме. Нажмите на иконку, чтобы открыть или закрыть его";
+            notifyIcon.BalloonTipText = "Приложение работает в фоновом режиме";
             notifyIcon.BalloonTipTitle = "FREENET";
             if (!hide_tooltips) notifyIcon.ShowBalloonTip(3);
 
 
 
-            e.Cancel = true;
+            
             this.Hide();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
-
         }
 
-        private void CloseApp()
+        static public void CloseApp()
         {
             List<Service> services = MainPage.Services;
             if (services != null)
