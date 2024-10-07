@@ -85,9 +85,9 @@ namespace FreeNet.pages
 
             _services =
             [
-                new Service("GoodByeDPI", "./programs/GoodbyeDPI/x86/goodbyedpi.exe", buttons_dpi, dpi_status, dpi_arg, dpi_pid),
-                new Service("DOH", "./programs/DoH/windows-386/dnsproxy.exe", buttons_doh, doh_status, doh_arg, doh_pid, doh_ports),
-                new Service("Proxy", "./programs/3proxy-0.9.3/bin/3proxy.exe", buttons_proxy, proxy_status, proxy_arg, proxy_pid, proxy_ports),
+                new Service("GoodByeDPI", "./programs/GoodbyeDPI/x86/goodbyedpi.exe", buttons_dpi, dpi_status, dpi_arg, dpi_pid, null, chkb_restart_dpi),
+                new Service("DOH", "./programs/DoH/windows-386/dnsproxy.exe", buttons_doh, doh_status, doh_arg, doh_pid, doh_ports, chkb_restart_doh),
+                new Service("Proxy", "./programs/3proxy-0.9.3/bin/3proxy.exe", buttons_proxy, proxy_status, proxy_arg, proxy_pid, proxy_ports, chkb_restart_proxy),
             ];
             Services = _services;
 
@@ -175,7 +175,7 @@ namespace FreeNet.pages
 
         async private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-            Settings form = new Settings(Config.getParam("GoodByeDPI"));
+            Settings form = new Settings(Config.getParams("GoodByeDPI")["Arguments"].ToString());
             form.ShowDialog();
             if (form.save)
             {
@@ -186,7 +186,7 @@ namespace FreeNet.pages
 
         async private void Button_Click_3(object sender, RoutedEventArgs e)
         {
-            Settings form = new Settings(Config.getParam("DOH"));
+            Settings form = new Settings(Config.getParams("DOH")["Arguments"].ToString());
             form.ShowDialog();
             if (form.save)
             {
@@ -196,7 +196,7 @@ namespace FreeNet.pages
 
        async private void Button_Click_4(object sender, RoutedEventArgs e)
         {
-            Settings form = new Settings(Config.getParam("Proxy"));
+            Settings form = new Settings(Config.getParams("Proxy")["Arguments"].ToString());
             form.ShowDialog();
             if (form.save)
             {

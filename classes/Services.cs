@@ -51,7 +51,7 @@ namespace FreeNet.classes
         {
             get
             {
-                return Config.getParam(_Name);
+                return Config.getParams(_Name)["Arguments"].ToString();
             }
         }
         private List<Button> _Btns;
@@ -59,6 +59,7 @@ namespace FreeNet.classes
         private TextBox _tb_arg;
         private TextBox _pid;
         private TextBox _ports;
+        private CheckBox _chkb_restart;
 
         private string Ports
         {
@@ -77,7 +78,7 @@ namespace FreeNet.classes
         public delegate void notifHandler(int status);
         public event notifHandler Notify;
 
-        public Service(string name, string directory, List<Button> btns, Label status, TextBox tb_arg, TextBox pid, TextBox ports = null)
+        public Service(string name, string directory, List<Button> btns, Label status, TextBox tb_arg, TextBox pid, TextBox ports, CheckBox chkb_restart)
         {
 
             this._Name = name;
@@ -88,7 +89,8 @@ namespace FreeNet.classes
             this._tb_arg = tb_arg;
             this._pid = pid;
             this._ports = ports;
-
+            this._chkb_restart = chkb_restart;
+            chkb_restart.IsChecked = (bool)Config.getParams(_Name)["auto_restart"];
 
             this._Status = 0;
 
@@ -279,6 +281,16 @@ namespace FreeNet.classes
                 {
                     _Status = 0;
                     MainPage.Log.Write("Stopped\tCode: " + exitCode, _Name);
+                    if (exitCode != -33)
+                    {
+                        _chkb_restart.Dispatcher.BeginInvoke(() =>
+                        {
+                            if ((bool)_chkb_restart.IsChecked)
+                            {
+                                Start();
+                            }
+                        });
+                    }
                     return;
                 }
                 _Status = 3;
@@ -290,25 +302,13 @@ namespace FreeNet.classes
 
         private static void KillProcess(int pid)
         {
-            //ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
-            //  ("Select * From Win32_Process Where ParentProcessID=" + pid);
-            //ManagementObjectCollection processCollection = processSearcher.Get();
-
-            //// We must kill child processes first!
-            //if (processCollection != null)
-            //{
-            //    foreach (ManagementObject mo in processCollection)
-            //    {
-            //        KillProcessAndChildrens(Convert.ToInt32(mo["ProcessID"])); //kill child processes(also kills childrens of childrens etc.)
-            //    }
-            //}
 
             try
             {
                 Process proc = Process.GetProcessById(pid);
                 if (!proc.HasExited)
                 {
-                    if (!TerminateProcess(proc.Handle, 0))
+                    if (!TerminateProcess(proc.Handle, -33))
                     {
                         var err = GetLastError();
                         throw new Exception("Error code: " + err);

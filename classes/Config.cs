@@ -23,13 +23,16 @@ namespace FreeNet.classes
             string json = """
                 {
                   "GoodByeDPI": {
-                    "Arguments": "-p -s -f 1 -e 1 -q --wrong-seq --native-frag --reverse-frag --fake-gen 30 --fake-resend 1 --fake-from-hex 18fc408e68 --fake-from-hex 7e60d032be"
+                    "Arguments": "-p -s -f 1 -e 1 -q --wrong-seq --native-frag --reverse-frag --fake-gen 30 --fake-resend 1 --fake-from-hex 18fc408e68 --fake-from-hex 7e60d032be",
+                    "auto_restart": true
                   },
                   "DOH": {
-                    "Arguments": "-u https://1.1.1.1/dns-query  --hosts-files=\"%pwd_no_disk%/programs/DoH/windows-386/hosts\""
+                    "Arguments": "-u https://1.1.1.1/dns-query  --hosts-files=\"%pwd_no_disk%/programs/DoH/windows-386/hosts\"",
+                    "auto_restart": true
                   },
                   "Proxy": {
-                    "Arguments": "%pwd%/programs/3proxy-0.9.3/bin/cfg.cfg"
+                    "Arguments": "%pwd%/programs/3proxy-0.9.3/bin/cfg.cfg",
+                    "auto_restart": true
                   }
                 }
                 """;
@@ -108,10 +111,10 @@ namespace FreeNet.classes
             return true;
         }
 
-        static public string getParam(string name)
+        static public JObject getParams(string name)
         {
             JObject conf = getConfig();
-            return conf[name]["Arguments"].ToString();
+            return (JObject) conf[name];
         }
 
     }
